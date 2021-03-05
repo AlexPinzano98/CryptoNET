@@ -23,7 +23,7 @@ class CryptoController extends Controller
             /* $all_usuario=DB::table('usuarios')->where([
                 ['email','=',$datos['email']],
                 ['password','=',md5($datos['pswd'])]])->get(); */
-            
+
                 $conseguir_id=DB::select('SELECT * FROM usuarios where email=? and password=?', [$datos['email'],md5($datos['pswd'])]);
             foreach ($conseguir_id as $id) {
                 $id_user=$id->id_usuario;
@@ -41,7 +41,21 @@ class CryptoController extends Controller
 
     public function addCarrito($id_producto){
         $id_usuario = session()->get('user');
-        DB::insert('insert into carrito (id_producto,id_usuario) VALUES (?,?)', [$id_producto,$id_usuario]);
+        $one = 1;
+        $comprovar = $users=DB::table('carrito')->where([
+            ['id_usuario','=',$id_usuario],
+            ['id_producto','=',$id_producto]
+            ])->count();
+        // Comprovamos si ya hay un registro en la tabla carrito
+        if ($comprovar == 0){ // Si no existe lo añadimos
+            DB::insert('insert into carrito (id_producto,id_usuario,unidades) VALUES (?,?,?)', [$id_producto,$id_usuario,$one]);
+        } // Si existe no hacemos nada (ya está insertado)
+
+        $productos=DB::select('select * from productos');
+        return view('/mostrar_productos',compact('productos'));
+    }
+
+    public function verProductos(){
         $productos=DB::select('select * from productos');
         return view('/mostrar_productos',compact('productos'));
     }
@@ -53,8 +67,34 @@ class CryptoController extends Controller
 
     public function verCarrito(){
         $id_usuario = session()->get('user');
-        $carrito=DB::select('SELECT * FROM carrito where id_usuario=?', [$id_usuario]);
-        return view('carrito', compact('carrito'));
+        $productosCarrito = DB::select('SELECT p.id_producto,p.nombre,p.precio,p.foto,c.id_usuario,c.unidades FROM productos AS p
+        LEFT JOIN carrito AS c ON c.id_producto=p.id_producto
+        WHERE c.id_usuario=?',[$id_usuario]);
+        return view('carrito',compact('productosCarrito'));
+    }
+
+    public function delete($id){
+        DB::table('carrito')->where('id_producto','=',$id)->delete();
+        return redirect('verCarrito');
+    }
+
+    public function updateUnidad(Request $request){
+        try {
+            $id_user = session()->get('user');
+            $id_p = $request->input('id_p');
+            $unidades = $request->input('unidades');
+
+            DB::table('carrito')->where([['id_usuario','=',$id_user],
+            ['id_producto','=',$id_p]
+            ])->update(['unidades'=>$unidades]);
+
+            // print_r($id_p);
+            // print_r($unidades);
+            return response()->json(array('resultado'=>'OK'), 200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(array('resultado'=>'NOK'.$th->getMessage()), 200);
+        }
     }
 
     /**

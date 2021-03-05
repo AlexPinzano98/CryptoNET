@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 </head>
-<body><br>
-<i class="fas fa-shopping-cart"></i><br>
+<body>
+
+<form method="get" action="{{url('/verCarrito')}}">
+    <button type='submit' ><i class="fas fa-shopping-cart fa-3x"></i></button>
+</form>
+
 <div class="card">
     <div class="card-body">
         <table class="table table-light">
@@ -39,6 +43,6 @@
         </table>
     </div>
 </div>
-<script src="{{asset('js/app.js')}}"></script>  
+<script src="{{asset('js/app.js')}}"></script>
 </body>
 </html>
