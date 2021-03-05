@@ -23,7 +23,7 @@ class CryptoController extends Controller
             /* $all_usuario=DB::table('usuarios')->where([
                 ['email','=',$datos['email']],
                 ['password','=',md5($datos['pswd'])]])->get(); */
-            
+
                 $conseguir_id=DB::select('SELECT * FROM usuarios where email=? and password=?', [$datos['email'],md5($datos['pswd'])]);
             foreach ($conseguir_id as $id) {
                 $id_user=$id->id_usuario;
@@ -46,6 +46,11 @@ class CryptoController extends Controller
         return view('/mostrar_productos',compact('productos'));
     }
 
+    public function verProductos(){
+        $productos=DB::select('select * from productos');
+        return view('/mostrar_productos',compact('productos'));
+    }
+
     public function deleteCarrito($id_carrito){
         DB::delete('delete from carrito where id_carrito=?', [$id_carrito]);
         return view('carrito');
@@ -53,8 +58,15 @@ class CryptoController extends Controller
 
     public function verCarrito(){
         $id_usuario = session()->get('user');
-        $carrito=DB::select('SELECT * FROM carrito where id_usuario=?', [$id_usuario]);
-        return view('carrito', compact('carrito'));
+        $productosCarrito = DB::select('SELECT p.id_producto,p.nombre,p.precio,p.foto,c.id_usuario FROM productos AS p
+        LEFT JOIN carrito AS c ON c.id_producto=p.id_producto
+        WHERE c.id_usuario=?',[$id_usuario]);
+        return view('carrito',compact('productosCarrito'));
+    }
+
+    public function delete($id){
+        DB::table('carrito')->where('id_producto','=',$id)->delete();
+        return redirect('verCarrito');
     }
 
     /**

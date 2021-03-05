@@ -17,6 +17,8 @@ use App\Http\Controllers\CryptoController;
 Route::get('/', [CryptoController::class, 'login']);
 Route::post('validarlogin', [CryptoController::class, 'validarlogin']);
 Route::get('/addCarrito/{id_producto}', [CryptoController::class, 'addCarrito']);
-Route::get('/deleteCarrito', [CryptoController::class, 'deleteCarrito']);
 // Route::get('/mostrar_productos', [CryptoController::class, 'deleteCarrito']);
-Route::get('/verCarrito', [RestauranteController::class, 'verCarrito']);
+Route::get('/verProductos', [CryptoController::class, 'verProductos']);
+Route::get('/verCarrito', [CryptoController::class, 'verCarrito']);
+
+Route::delete('/borrar/{id}', [CryptoController::class, 'delete']);
