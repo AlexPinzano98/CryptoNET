@@ -22,3 +22,5 @@ Route::get('/verProductos', [CryptoController::class, 'verProductos']);
 Route::get('/verCarrito', [CryptoController::class, 'verCarrito']);
 
 Route::delete('/borrar/{id}', [CryptoController::class, 'delete']);
+
+Route::post('updateUnidad', [CryptoController::class, 'updateUnidad']);

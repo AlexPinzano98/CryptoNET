@@ -10,7 +10,7 @@
 <body>
 
 <form method="get" action="{{url('/verCarrito')}}">
-    <button type='submit' ><i class="fas fa-shopping-cart"></i></button>
+    <button type='submit' ><i class="fas fa-shopping-cart fa-3x"></i></button>
 </form>
 
 <div class="card">
