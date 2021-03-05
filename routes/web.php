@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CryptoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [CryptoController::class, 'login']);
+Route::post('validarlogin', [CryptoController::class, 'validarlogin']);
+Route::get('/addCarrito/{id_producto}', [CryptoController::class, 'addCarrito']);
+Route::get('/deleteCarrito', [CryptoController::class, 'deleteCarrito']);
+// Route::get('/mostrar_productos', [CryptoController::class, 'deleteCarrito']);
+Route::get('/verCarrito', [RestauranteController::class, 'verCarrito']);
