@@ -12,7 +12,10 @@ class CryptoController extends Controller
     public function login(){
         return view('login');
     }
-
+    public function cerrar_sesion(){
+        session()->forget(['user']);
+        return redirect('/');
+    }
     public function validarLogin(Request $request){
         $datos = $request->except('_token','enviar'); // Datos del formulario
         $users=DB::table('usuarios')->where([

@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css">
 </head>
 
 <body>
+<div class="col-md-6 login-form-1">
     <h2>Inicio Sesión</h2>
-    <div class="login">
+    <div class="cont">
         <form action="{{url('/validarlogin')}}" method="POST">
         {{csrf_field()}}
             <input type="email" id="email" class="form-control" placeholder="Usuario..." name="email"><br><br>
@@ -24,5 +26,6 @@
         <div id="msg"></div>
     </div>
     <div class="lateral"></div>
+</div>
 </body>
 </html>
