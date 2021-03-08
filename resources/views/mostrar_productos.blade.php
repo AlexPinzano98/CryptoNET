@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mostrar</title>
-    <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 </head>
 <body>
@@ -33,8 +32,8 @@
                     <td>{{$producto->precio}}</td>
 
                     <td>
-                        <form method="get" action="{{url('/addCarrito/'.$producto->id_producto)}}">
-                        <button type='submit' class="btn btn-primary" onclick="return confirm('¿añadir al carrito?');">añadir al carrito</button>
+                        <form method="get" action="{{url('/addCarrito/'.$producto->id_producto.'/'.$producto->precio)}}">
+                            <button type='submit' class="btn btn-primary" onclick="return confirm('¿añadir al carrito?');">añadir al carrito</button>
                         </form>
                     </td>
                 </tr>
@@ -43,6 +42,7 @@
         </table>
     </div>
 </div>
-<script src="{{asset('js/app.js')}}"></script>
+
+
 </body>
 </html>
