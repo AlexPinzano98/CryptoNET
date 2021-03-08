@@ -15,7 +15,7 @@ function openModal() {
             var respuesta = JSON.parse(ajax.responseText);
             console.log(respuesta)
             document.getElementById('total').innerHTML = respuesta['total'] + ' euros';
-            document.getElementById('desc').innerHTML = respuesta['desc'] + ' euros';
+            document.getElementById('desc').innerHTML = respuesta['desc'];
         }
     }
     ajax.send(datasend);

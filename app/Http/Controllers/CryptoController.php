@@ -119,7 +119,49 @@ class CryptoController extends Controller
     }
 
     public function pagar(){
-        echo "hola";
+        $apiContext = new \PayPal\Rest\ApiContext(
+            new \PayPal\Auth\OAuthTokenCredential(
+                config('services.paypal.clientid'),     // ClientID
+                config('services.paypal.secret')      // ClientSecret
+            )
+        );
+        $payer = new \PayPal\Api\Payer();
+        $payer->setPaymentMethod('paypal');
+
+        $amount = new \PayPal\Api\Amount();
+        //CALCULAMOS EL PRECIO TOTAL
+        $datos=DB::select('SELECT * FROM carrito where id_usuario=?', [session()->get('user')]);
+        $preuTotal = 0;
+        foreach ($datos as $dato) {
+            $preuTotal = $preuTotal + $dato->preciototal;
+        }
+        $amount->setTotal($preuTotal);
+        $amount->setCurrency('EUR');
+
+        $transaction = new \PayPal\Api\Transaction();
+        $transaction->setAmount($amount);
+        //le envioa la pagina informacion del id
+        //si se cancela lo llevo a la pagina que quiero
+        $redirectUrls = new \PayPal\Api\RedirectUrls();
+        $redirectUrls->setReturnUrl(url("comprado/"))->setCancelUrl(url("/"));
+
+        $payment = new \PayPal\Api\Payment();
+        $payment->setIntent('sale')
+            ->setPayer($payer)
+            ->setTransactions(array($transaction))
+            ->setRedirectUrls($redirectUrls);
+
+        try {
+            $payment->create($apiContext);
+            //me redirige a la pagina de paypal
+            return redirect()->away( $payment->getApprovalLink());
+
+        }
+        catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            // This will print the detailed information on the exception.
+            //REALLY HELPFUL FOR DEBUGGING
+            echo $ex->getData();
+        }
     }
 
     /**
