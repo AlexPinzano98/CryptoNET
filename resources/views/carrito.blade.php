@@ -41,7 +41,7 @@
                     <i onclick="sumarUnidad('{{$producto->id_producto}}','{{$producto->precio}}')" class="fas fa-plus-square"></i>
                 </td>
                 <td>
-                <input type="number" id="pt-{{$producto->id_producto}}" value="{{$producto->unidades * $producto->precio}}" style="width: 60px; text-align: center; padding-left: 15px;" readonly>
+                    <input type="number" id="pt-{{$producto->id_producto}}" value="{{$producto->preciototal}}" style="width: 50px; text-align: center; padding-left: 15px;" readonly>
                 </td>
                 <td>
                     <form method="post" action="{{url('/borrar/'.$producto->id_producto)}}">
@@ -54,6 +54,10 @@
         @endforeach
     </table>
 
-
+    <h1>Precio total</h1>
+    <!-- Al hacer click saldrá una ventana modal que mostrara el precio total y una descripcion de la compra -->
+    <form method="get" action="{{url('/pagar')}}">
+        <button type="submit">PAGAR</button>
+    </form>
 </body>
 </html>

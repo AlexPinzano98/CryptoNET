@@ -39,7 +39,7 @@ class CryptoController extends Controller
         }
     }
 
-    public function addCarrito($id_producto){
+    public function addCarrito($id_producto,$precio){
         $id_usuario = session()->get('user');
         $one = 1;
         $comprovar = $users=DB::table('carrito')->where([
@@ -48,7 +48,7 @@ class CryptoController extends Controller
             ])->count();
         // Comprovamos si ya hay un registro en la tabla carrito
         if ($comprovar == 0){ // Si no existe lo añadimos
-            DB::insert('insert into carrito (id_producto,id_usuario,unidades) VALUES (?,?,?)', [$id_producto,$id_usuario,$one]);
+            DB::insert('insert into carrito (id_producto,id_usuario,unidades,preciototal) VALUES (?,?,?,?)', [$id_producto,$id_usuario,$one,$precio]);
         } // Si existe no hacemos nada (ya está insertado)
 
         $productos=DB::select('select * from productos');
@@ -67,9 +67,13 @@ class CryptoController extends Controller
 
     public function verCarrito(){
         $id_usuario = session()->get('user');
-        $productosCarrito = DB::select('SELECT p.id_producto,p.nombre,p.precio,p.foto,c.id_usuario,c.unidades FROM productos AS p
+        $productosCarrito = DB::select('SELECT p.id_producto,p.nombre,p.precio,p.foto,c.id_usuario,c.unidades,c.preciototal FROM productos AS p
         LEFT JOIN carrito AS c ON c.id_producto=p.id_producto
         WHERE c.id_usuario=?',[$id_usuario]);
+        $preciototal = 0;
+        foreach ($productosCarrito as $producto) {
+            $preciototal+=$producto->preciototal;
+        }
         return view('carrito',compact('productosCarrito'));
     }
 
@@ -83,10 +87,13 @@ class CryptoController extends Controller
             $id_user = session()->get('user');
             $id_p = $request->input('id_p');
             $unidades = $request->input('unidades');
+            $precio = $request->input('precio');
 
-            DB::table('carrito')->where([['id_usuario','=',$id_user],
-            ['id_producto','=',$id_p]
-            ])->update(['unidades'=>$unidades]);
+            // DB::table('carrito')->where([['id_usuario','=',$id_user],
+            // ['id_producto','=',$id_p]
+            // ])->update([['unidades'=>$unidades],['preciototal'=>$totalprice]]);
+
+            DB::update('UPDATE carrito SET unidades = ? , preciototal = ? WHERE id_usuario = ? AND id_producto = ?',[$unidades,$precio,$id_user,$id_p]);
 
             // print_r($id_p);
             // print_r($unidades);
@@ -95,6 +102,10 @@ class CryptoController extends Controller
             //throw $th;
             return response()->json(array('resultado'=>'NOK'.$th->getMessage()), 200);
         }
+    }
+
+    public function pagar(){
+        echo "hola";
     }
 
     /**
