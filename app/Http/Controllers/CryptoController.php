@@ -164,6 +164,16 @@ class CryptoController extends Controller
         }
     }
 
+    public function comprado(){
+        // return 'PAGO REALIZADO CON ÉXITO';
+        $id_user = session()->get('user');
+        DB::table('carrito')->where('id_usuario','=',$id_user)->delete();
+
+        $productos=DB::select('select * from productos');
+        return view('/mostrar_productos',compact('productos'));
+    }
+
+
     /**
      * Display a listing of the resource.
      *
