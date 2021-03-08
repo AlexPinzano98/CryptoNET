@@ -28,3 +28,5 @@ Route::post('updateUnidad', [CryptoController::class, 'updateUnidad']);
 Route::get('/pagar', [CryptoController::class, 'pagar']);
 
 Route::post('updatePrecioTotal', [CryptoController::class, 'updatePrecioTotal']);
+
+Route::post('calcularTotal', [CryptoController::class, 'calcularTotal']);

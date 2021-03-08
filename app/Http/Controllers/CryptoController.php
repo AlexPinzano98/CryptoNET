@@ -104,6 +104,20 @@ class CryptoController extends Controller
         }
     }
 
+    public function calcularTotal(){
+        $datos=DB::select('SELECT productos.nombre, carrito.unidades, carrito.id_producto, carrito.preciototal FROM carrito
+        LEFT JOIN productos ON productos.id_producto = carrito.id_producto
+        where id_usuario=?', [session()->get('user')]);
+        $preuTotal = 0;
+        $desc = '';
+        foreach ($datos as $dato) {
+            $preuTotal = $preuTotal + $dato->preciototal;
+            $desc = $desc . ($dato->unidades . ' unidad/es de ' . $dato->nombre . '. ' );
+        }
+        // print_r($preuTotal);
+        return response()->json(array('total'=>$preuTotal, 'desc'=>$desc), 200);
+    }
+
     public function pagar(){
         echo "hola";
     }

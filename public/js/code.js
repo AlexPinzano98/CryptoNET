@@ -1,3 +1,38 @@
+window.onload = function() {
+    modal = document.getElementById('modalUpdate');
+}
+
+function openModal() {
+    modal.style.display = "block";
+
+    var ajax = new objetoAjax();
+    var token = document.getElementById('token').getAttribute('content');
+    ajax.open('POST', 'calcularTotal', true);
+    var datasend = new FormData();
+    datasend.append('_token', token);
+    ajax.onreadystatechange = function() {
+        if (ajax.readyState == 4 && ajax.status == 200) {
+            var respuesta = JSON.parse(ajax.responseText);
+            console.log(respuesta)
+            document.getElementById('total').innerHTML = respuesta['total'] + ' euros';
+            document.getElementById('desc').innerHTML = respuesta['desc'] + ' euros';
+        }
+    }
+    ajax.send(datasend);
+
+
+}
+
+function closeModal() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 function objetoAjax() {
     var xmlhttp = false;
     try {

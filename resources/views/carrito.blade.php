@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
     <script src="{{asset('js/code.js')}}"></script>
     <meta name="csrf-token" id="token" content="{{ csrf_token() }}">
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
 
@@ -54,10 +55,26 @@
         @endforeach
     </table>
 
-    <h1>Precio total</h1>
     <!-- Al hacer click saldrá una ventana modal que mostrara el precio total y una descripcion de la compra -->
-    <form method="get" action="{{url('/pagar')}}">
-        <button type="submit">PAGAR</button>
-    </form>
+
+        <button type="submit" onclick="openModal()">PAGAR</button>
+
+
+    <!-- MODAL -->
+    <div id="modalUpdate" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content" style="text-align: center;">
+            <span class="close" onclick="closeModal()">&times;</span>
+
+            <h2> CONFIRMA TUS PRODUCTOS </h2>
+
+            <p id="total"></p>
+
+            <p id="desc"></p>
+
+            <input type="submit" id="pagar" value="PAGAR"
+            class="btn btn-dark" style="width: 60%; margin: 0 20%;">
+        </div>
+    </div>
 </body>
 </html>
