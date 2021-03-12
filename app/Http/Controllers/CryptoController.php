@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Crypto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EnviarMensage;
 use Illuminate\Support\Facades\Storage;
 
 class CryptoController extends Controller
@@ -30,11 +32,12 @@ class CryptoController extends Controller
                 $conseguir_id=DB::select('SELECT * FROM usuarios where email=? and password=?', [$datos['email'],md5($datos['pswd'])]);
             foreach ($conseguir_id as $id) {
                 $id_user=$id->id_usuario;
-
+                $email=$id->email;
             }
 
             $productos=DB::select('select * from productos');
             $request->session()->put('user',$id_user);
+            $request->session()->put('email',$email);
             return view('/mostrar_productos',compact('productos'));
         } else {
             $error="Correo o contraseña incorrectos";
@@ -170,12 +173,35 @@ class CryptoController extends Controller
     public function comprado(){
         // return 'PAGO REALIZADO CON ÉXITO';
         $id_user = session()->get('user');
+        // Anter de borrar los datos del carrito hemos de crear un registro en la tabla factura
+        // Datos de la factura: ID_factura, ID_usuario, Importe total y descripción de la facutras
+        $datos=DB::select('SELECT productos.nombre, carrito.unidades, carrito.id_producto, carrito.preciototal FROM carrito
+        LEFT JOIN productos ON productos.id_producto = carrito.id_producto
+        where id_usuario=?', [$id_user]);
+        $preuTotal = 0;
+        $desc = '';
+        foreach ($datos as $dato) {
+            $preuTotal = $preuTotal + $dato->preciototal;
+            $desc = $desc . ($dato->unidades . ' unidad/es de ' . $dato->nombre . '. ' );
+        }
+        // Ahora hacer un insert into de los valores
+        DB::insert('insert into facturas (id_usuario,descripcion,preciototal) VALUES (?,?,?)', [$id_user,$desc,$preuTotal]);
+
         DB::table('carrito')->where('id_usuario','=',$id_user)->delete();
+
+        // AHORA ENVIAMOS EL EMAIL
+        $email_user = session()->get('email');
+        $this->sendEmail($email_user);
+
 
         $productos=DB::select('select * from productos');
         return view('/mostrar_productos',compact('productos'));
     }
 
+    public function sendEmail($email)
+    {
+        Mail::to($email)->send(new EnviarMensage);
+    }
 
     /**
      * Display a listing of the resource.

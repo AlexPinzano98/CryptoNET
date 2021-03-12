@@ -74,14 +74,18 @@
         <div class="modal-content" style="text-align: center;">
             <span class="close" onclick="closeModal()">&times;</span>
 
-            <h2> CONFIRMA TUS PRODUCTOS </h2>
+            <form method="get" action="{{url('/pagar')}}">
+            {{csrf_field()}}
+                <h2> CONFIRMA TUS PRODUCTOS </h2>
 
-            <p id="total"></p>
+                <p id="total"></p>
 
-            <p id="desc"></p>
+                <p id="desc"></p>
 
-            <input type="submit" id="pagar" value="PAGAR"
-            class="btn btn-dark" style="width: 60%; margin: 0 20%;">
+                <input type="submit" id="pagar" value="PAGAR"
+                class="btn btn-dark" style="width: 60%; margin: 0 20%;">
+            </form>
+
         </div>
     </div>
     </div>

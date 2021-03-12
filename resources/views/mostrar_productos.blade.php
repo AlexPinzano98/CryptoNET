@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mostrar</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css">
+    <!-- <link href="{{ asset('css/styles.css') }}" rel="stylesheet" type="text/css"> -->
+    <link href="{{ asset('css/estilos.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
 
@@ -17,7 +18,7 @@
     <a href="cerrar_sesion" class="btn btn-outline-info">Logout</a>
 </header>
 
-
+<div class="bodyp">
 @foreach($productos as $producto)
     <div class="card">
         <div class="container">
@@ -33,6 +34,8 @@
         </div>
     </div>
 @endforeach
+</div>
+
 
 
 </body>
