@@ -12,7 +12,10 @@ class CryptoController extends Controller
     public function login(){
         return view('login');
     }
-
+    public function cerrar_sesion(){
+        session()->forget(['user']);
+        return redirect('/');
+    }
     public function validarLogin(Request $request){
         $datos = $request->except('_token','enviar'); // Datos del formulario
         $users=DB::table('usuarios')->where([
@@ -39,7 +42,7 @@ class CryptoController extends Controller
         }
     }
 
-    public function addCarrito($id_producto){
+    public function addCarrito($id_producto,$precio){
         $id_usuario = session()->get('user');
         $one = 1;
         $comprovar = $users=DB::table('carrito')->where([
@@ -48,7 +51,7 @@ class CryptoController extends Controller
             ])->count();
         // Comprovamos si ya hay un registro en la tabla carrito
         if ($comprovar == 0){ // Si no existe lo añadimos
-            DB::insert('insert into carrito (id_producto,id_usuario,unidades) VALUES (?,?,?)', [$id_producto,$id_usuario,$one]);
+            DB::insert('insert into carrito (id_producto,id_usuario,unidades,preciototal) VALUES (?,?,?,?)', [$id_producto,$id_usuario,$one,$precio]);
         } // Si existe no hacemos nada (ya está insertado)
 
         $productos=DB::select('select * from productos');
@@ -67,9 +70,13 @@ class CryptoController extends Controller
 
     public function verCarrito(){
         $id_usuario = session()->get('user');
-        $productosCarrito = DB::select('SELECT p.id_producto,p.nombre,p.precio,p.foto,c.id_usuario,c.unidades FROM productos AS p
+        $productosCarrito = DB::select('SELECT p.id_producto,p.nombre,p.precio,p.foto,c.id_usuario,c.unidades,c.preciototal FROM productos AS p
         LEFT JOIN carrito AS c ON c.id_producto=p.id_producto
         WHERE c.id_usuario=?',[$id_usuario]);
+        $preciototal = 0;
+        foreach ($productosCarrito as $producto) {
+            $preciototal+=$producto->preciototal;
+        }
         return view('carrito',compact('productosCarrito'));
     }
 
@@ -83,10 +90,13 @@ class CryptoController extends Controller
             $id_user = session()->get('user');
             $id_p = $request->input('id_p');
             $unidades = $request->input('unidades');
+            $precio = $request->input('precio');
 
-            DB::table('carrito')->where([['id_usuario','=',$id_user],
-            ['id_producto','=',$id_p]
-            ])->update(['unidades'=>$unidades]);
+            // DB::table('carrito')->where([['id_usuario','=',$id_user],
+            // ['id_producto','=',$id_p]
+            // ])->update([['unidades'=>$unidades],['preciototal'=>$totalprice]]);
+
+            DB::update('UPDATE carrito SET unidades = ? , preciototal = ? WHERE id_usuario = ? AND id_producto = ?',[$unidades,$precio,$id_user,$id_p]);
 
             // print_r($id_p);
             // print_r($unidades);
@@ -96,6 +106,76 @@ class CryptoController extends Controller
             return response()->json(array('resultado'=>'NOK'.$th->getMessage()), 200);
         }
     }
+
+    public function calcularTotal(){
+        $datos=DB::select('SELECT productos.nombre, carrito.unidades, carrito.id_producto, carrito.preciototal FROM carrito
+        LEFT JOIN productos ON productos.id_producto = carrito.id_producto
+        where id_usuario=?', [session()->get('user')]);
+        $preuTotal = 0;
+        $desc = '';
+        foreach ($datos as $dato) {
+            $preuTotal = $preuTotal + $dato->preciototal;
+            $desc = $desc . ($dato->unidades . ' unidad/es de ' . $dato->nombre . '. ' );
+        }
+        // print_r($preuTotal);
+        return response()->json(array('total'=>$preuTotal, 'desc'=>$desc), 200);
+    }
+
+    public function pagar(){
+        $apiContext = new \PayPal\Rest\ApiContext(
+            new \PayPal\Auth\OAuthTokenCredential(
+                config('services.paypal.clientid'),     // ClientID
+                config('services.paypal.secret')      // ClientSecret
+            )
+        );
+        $payer = new \PayPal\Api\Payer();
+        $payer->setPaymentMethod('paypal');
+
+        $amount = new \PayPal\Api\Amount();
+        //CALCULAMOS EL PRECIO TOTAL
+        $datos=DB::select('SELECT * FROM carrito where id_usuario=?', [session()->get('user')]);
+        $preuTotal = 0;
+        foreach ($datos as $dato) {
+            $preuTotal = $preuTotal + $dato->preciototal;
+        }
+        $amount->setTotal($preuTotal);
+        $amount->setCurrency('EUR');
+
+        $transaction = new \PayPal\Api\Transaction();
+        $transaction->setAmount($amount);
+        //le envioa la pagina informacion del id
+        //si se cancela lo llevo a la pagina que quiero
+        $redirectUrls = new \PayPal\Api\RedirectUrls();
+        $redirectUrls->setReturnUrl(url("comprado/"))->setCancelUrl(url("/"));
+
+        $payment = new \PayPal\Api\Payment();
+        $payment->setIntent('sale')
+            ->setPayer($payer)
+            ->setTransactions(array($transaction))
+            ->setRedirectUrls($redirectUrls);
+
+        try {
+            $payment->create($apiContext);
+            //me redirige a la pagina de paypal
+            return redirect()->away( $payment->getApprovalLink());
+
+        }
+        catch (\PayPal\Exception\PayPalConnectionException $ex) {
+            // This will print the detailed information on the exception.
+            //REALLY HELPFUL FOR DEBUGGING
+            echo $ex->getData();
+        }
+    }
+
+    public function comprado(){
+        // return 'PAGO REALIZADO CON ÉXITO';
+        $id_user = session()->get('user');
+        DB::table('carrito')->where('id_usuario','=',$id_user)->delete();
+
+        $productos=DB::select('select * from productos');
+        return view('/mostrar_productos',compact('productos'));
+    }
+
 
     /**
      * Display a listing of the resource.
