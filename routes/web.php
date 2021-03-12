@@ -15,7 +15,7 @@ use App\Http\Controllers\CryptoController;
 */
 
 Route::get('/', [CryptoController::class, 'login']);
-Route::post('validarlogin', [CryptoController::class, 'validarlogin']);
+Route::post('/validarlogin', [CryptoController::class, 'validarlogin']);
 Route::get('/addCarrito/{id_producto}/{precio}', [CryptoController::class, 'addCarrito']);
 // Route::get('/mostrar_productos', [CryptoController::class, 'deleteCarrito']);
 Route::get('/verProductos', [CryptoController::class, 'verProductos']);

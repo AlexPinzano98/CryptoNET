@@ -6,6 +6,8 @@ use App\Models\Crypto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EnviarMensaje;
 
 class CryptoController extends Controller
 {
@@ -171,11 +173,19 @@ class CryptoController extends Controller
         // return 'PAGO REALIZADO CON ÉXITO';
         $id_user = session()->get('user');
         DB::table('carrito')->where('id_usuario','=',$id_user)->delete();
-
+        
         $productos=DB::select('select * from productos');
+
+        $email_user = session()->get('email');
+        $this->sendEmail($email_user);
+
         return view('/mostrar_productos',compact('productos'));
     }
 
+    public function sendEmail($email)
+    {
+        Mail::to($email)->send(new EnviarMensaje);
+    }
 
     /**
      * Display a listing of the resource.
