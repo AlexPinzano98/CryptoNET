@@ -38,5 +38,6 @@ Route::get('/cerrar_sesion',[CryptoController::class, 'cerrar_sesion']);
 
 // Ruta para actualizar el navegador al clicar hacia atras
 // Route::group(['middleware' => 'prevent-back-history'],function(){
-//     Route::get('/', 'CryptoController@/');
+//     // Auth::routes();
+//     Route::get('/', 'CryptoController@login');
 //   });

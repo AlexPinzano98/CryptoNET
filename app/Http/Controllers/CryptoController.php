@@ -62,8 +62,13 @@ class CryptoController extends Controller
     }
 
     public function verProductos(){
-        $productos=DB::select('select * from productos');
-        return view('/mostrar_productos',compact('productos'));
+        if ((session()->has('user'))) { // Así comprovamos que exista la session usuarios
+            $productos=DB::select('select * from productos');
+            return view('/mostrar_productos',compact('productos'));
+        } else {
+            return view('login');
+        }
+
     }
 
     public function deleteCarrito($id_carrito){

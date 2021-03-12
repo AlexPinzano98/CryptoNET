@@ -78,9 +78,11 @@
             {{csrf_field()}}
                 <h2> CONFIRMA TUS PRODUCTOS </h2>
 
-                <p id="total"></p>
+                <p style="font-weight: 600;">Importe total: </p>
+                <p id="total" style="font-size: 22px; color: green; font-weight: 800;"></p>
 
-                <p id="desc"></p>
+                <p style="font-weight: 600;">Descripción del pedido: </p>
+                <p id="desc"style="font-size: 20px; color: blue; font-weight: 800;"></p>
 
                 <input type="submit" id="pagar" value="PAGAR"
                 class="btn btn-dark" style="width: 60%; margin: 0 20%;">
