@@ -33,7 +33,7 @@
     <tbody>
         @foreach($productosCarrito as $producto)
             <tr>
-                <td>{{$producto->id_producto}}</td>
+                <td style="text-align=center;">{{$producto->id_producto}}</td>
                 <td>
                     <img src="{{asset('storage').'/'.$producto->foto}}" width="100">
                 </td>
