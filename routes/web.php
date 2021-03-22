@@ -34,3 +34,10 @@ Route::post('calcularTotal', [CryptoController::class, 'calcularTotal']);
 Route::get('comprado', [CryptoController::class, 'comprado']);
 
 Route::get('/cerrar_sesion',[CryptoController::class, 'cerrar_sesion']);
+
+
+// Ruta para actualizar el navegador al clicar hacia atras
+// Route::group(['middleware' => 'prevent-back-history'],function(){
+//     // Auth::routes();
+//     Route::get('/', 'CryptoController@login');
+//   });
