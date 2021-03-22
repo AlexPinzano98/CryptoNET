@@ -20,16 +20,18 @@ class CryptoController extends Controller
     }
     public function validarLogin(Request $request){
         $datos = $request->except('_token','enviar'); // Datos del formulario
-        $users=DB::table('usuarios')->where([
-            ['email','=',$datos['email']],
-            ['password','=',md5($datos['pswd'])]])->count();
-
+        $users=DB::table('usuarios')
+        ->where('email','=',$datos['email'])
+        ->where('password','=',$datos['pswd'])
+        ->count();
+        
+    
         if ($users == 1){
             /* $all_usuario=DB::table('usuarios')->where([
                 ['email','=',$datos['email']],
                 ['password','=',md5($datos['pswd'])]])->get(); */
 
-                $conseguir_id=DB::select('SELECT * FROM usuarios where email=? and password=?', [$datos['email'],md5($datos['pswd'])]);
+                $conseguir_id=DB::select('SELECT * FROM usuarios where email=? and password=?', [$datos['email'],$datos['pswd']]);
             foreach ($conseguir_id as $id) {
                 $id_user=$id->id_usuario;
                 $email=$id->email;
@@ -206,81 +208,5 @@ class CryptoController extends Controller
     public function sendEmail($email)
     {
         Mail::to($email)->send(new EnviarMensage);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Crypto  $crypto
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Crypto $crypto)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Crypto  $crypto
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Crypto $crypto)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Crypto  $crypto
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Crypto $crypto)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Crypto  $crypto
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Crypto $crypto)
-    {
-        //
     }
 }
